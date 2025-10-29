@@ -10,7 +10,6 @@ class Task {
     }
 }
 
-
 function addTask(event) {
     event.preventDefault();
     const taskForm = event.target;
@@ -21,11 +20,11 @@ function addTask(event) {
     tasksList.push(task);
     console.log("taskList after adding a task------>", tasksList);
     localStorage.setItem("tasksList", JSON.stringify(tasksList));
-    createCard();
+    createCards();
     taskForm.reset();
 }
 
-function createCard() {
+function createCards() {
     const mainDiv = document.querySelector("#div-main-id");
 
     mainDiv.innerHTML = "";
@@ -38,70 +37,67 @@ function createCard() {
 
         const card = document.querySelector("#div-card-id-"+i);
 
-        // divFirst = document.createElement("div");
-        // divFirst.setAttribute("id", "div-first-id");
-        // divSecond = document.createElement("div");
-        // divSecond.setAttribute("id", "div-second-id");
-        // cardDiv.append(divFirst, divSecond);
-
-        // const div1 = document.querySelector("#div-first-id");
+        const delButton = document.createElement("button");
+        delButton.setAttribute("class", "delete-button");
+        delButton.setAttribute("id", "delete-button-id-"+i);
+        delButton.setAttribute("onclick", "deleteTask('" + task.details + "')");
+        
         const taskDetails = document.createElement("p");
         taskDetails.setAttribute("class", "details-class");
         taskDetails.innerText = task.details;
-        // div1.appendChild(taskDtails);
 
         const taskDateTime = document.createElement("p");
         taskDateTime.setAttribute("class", "date-time-class mb-0");
         taskDateTime.innerText = task.deadlineDate + "\n" + task.deadlineTime;
 
-        // const taskTime = document.createElement("p");
-        // taskTime.setAttribute("class", "date-time-class mb-0");
-        // taskTime.innerText = task.deadlineTime;
+        card.append(delButton, taskDetails, taskDateTime);
 
-        card.append(taskDetails, taskDateTime);
-
-        // const div2 = document.querySelector("#div-second-id");
-        // const taskDateTime = document.createElement("ul");
-        // taskDateTime.setAttribute("id", "task-date-time-id-"+i);
-        // taskDateTime.setAttribute("class", "date-time-class");
-        // cardDiv.append(taskDtails,taskDateTime);
-
-        // const taskListItem = document.querySelector("#task-date-time-id-"+i);
-        // const taskDate = document.createElement("li");
-        // taskDate.setAttribute("class", "no-bullet");
-        // taskDate.innerText = task.deadlineDate;
-
-        // const taskTime = document.createElement("li");
-        // taskTime.setAttribute("class", "no-bullet");
-        // taskTime.innerText = task.deadlineTime;
-
-        // taskListItem.append(taskDate, taskTime);
-
-
+        const deleteButton = document.querySelector("#delete-button-id-"+i);
+        const icon = document.createElement("i");
+        icon.setAttribute("class", "bi bi-x-square-fill delete-button-i");
+        deleteButton.appendChild(icon);
     }
 }
 
-function formatDate(date) {
-
-
+function deleteTask(taskDetails) {
+    for (let i=0 ; i<tasksList.length ; i++) {
+        if (tasksList[i].details === taskDetails) {
+            tasksList.splice(i,1);            
+            break;
+        }
+    }
+    localStorage.setItem("tasksList", JSON.stringify(tasksList));
+    createCards();
 }
 
 let tasksList = [];
+const now = new Date();
+
 tasksListFromLocal = localStorage.getItem("tasksList");
 if (tasksListFromLocal) {
     const tasksListArray = JSON.parse(tasksListFromLocal);
     for (let i = 0; i < tasksListArray.length; i++) {
         const task = tasksListArray[i];
-        const newTask = new Task(task.details, task.deadlineDate, task.deadlineTime);
-        tasksList.push(newTask);
+
+        const customDateString = task.deadlineDate + " " + task.deadlineTime;
+        const parts = customDateString.split(/[\/\s:]/);
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        const hours = parseInt(parts[3], 10);
+        const minutes = parseInt(parts[4], 10);
+        const deadLineDateObject = new Date(year, month, day, hours, minutes);
+
+        if (now < deadLineDateObject){
+            const newTask = new Task(task.details, task.deadlineDate, task.deadlineTime);
+            tasksList.push(newTask);
+        }
     }
 }
 
 console.log(tasksList);
 
-createCard();
+localStorage.setItem("tasksList", JSON.stringify(tasksList));
 
-
-
-
+createCards();
 
