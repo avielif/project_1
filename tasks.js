@@ -1,9 +1,11 @@
 class Task {
+    id;
     details;
     deadlineDate;
     deadlineTime;
 
-    constructor(cDetails, cDeadlineDate, cDeadlineTime) {
+    constructor(cId, cDetails, cDeadlineDate, cDeadlineTime) {
+        this.id = cId;
         this.details = cDetails;
         this.deadlineDate = cDeadlineDate;
         this.deadlineTime = cDeadlineTime;
@@ -16,11 +18,12 @@ function addTask(event) {
     const details = taskForm.details.value;
     const deadlineDate = (new Date(taskForm.deadlineDate.value)).toLocaleDateString('en-GB');
     const deadlineTime = taskForm.deadlineTime.value;
-    const task = new Task(details, deadlineDate, deadlineTime);
+    const task = new Task(id, details, deadlineDate, deadlineTime);
     tasksList.push(task);
     console.log("taskList after adding a task------>", tasksList);
     localStorage.setItem("tasksList", JSON.stringify(tasksList));
     createCards();
+    id++;
     taskForm.reset();
 }
 
@@ -40,7 +43,7 @@ function createCards() {
         const delButton = document.createElement("button");
         delButton.setAttribute("class", "delete-button");
         delButton.setAttribute("id", "delete-button-id-"+i);
-        delButton.setAttribute("onclick", "deleteTask('" + task.details + "')");
+        delButton.setAttribute("onclick", "deleteTask('" + task.id + "')");
         
         const taskDetails = document.createElement("p");
         taskDetails.setAttribute("class", "details-class");
@@ -59,9 +62,9 @@ function createCards() {
     }
 }
 
-function deleteTask(taskDetails) {
+function deleteTask(taskId) {
     for (let i=0 ; i<tasksList.length ; i++) {
-        if (tasksList[i].details === taskDetails) {
+        if (tasksList[i].id === +taskId) {
             tasksList.splice(i,1);            
             break;
         }
@@ -72,10 +75,14 @@ function deleteTask(taskDetails) {
 
 let tasksList = [];
 const now = new Date();
+let id=1;
 
 tasksListFromLocal = localStorage.getItem("tasksList");
 if (tasksListFromLocal) {
     const tasksListArray = JSON.parse(tasksListFromLocal);
+    if (tasksListArray.length > 0) {
+        id = tasksListArray[tasksListArray.length-1].id + 1;
+    }
     for (let i = 0; i < tasksListArray.length; i++) {
         const task = tasksListArray[i];
 
@@ -89,7 +96,7 @@ if (tasksListFromLocal) {
         const deadLineDateObject = new Date(year, month, day, hours, minutes);
 
         if (now < deadLineDateObject){
-            const newTask = new Task(task.details, task.deadlineDate, task.deadlineTime);
+            const newTask = new Task(task.id, task.details, task.deadlineDate, task.deadlineTime);
             tasksList.push(newTask);
         }
     }
