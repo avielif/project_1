@@ -15,15 +15,14 @@ class Task {
 function addTask(event) {
     event.preventDefault();
     const taskForm = event.target;
+    const id = getLastId() + 1;
     const details = taskForm.details.value;
     const deadlineDate = (new Date(taskForm.deadlineDate.value)).toLocaleDateString('en-GB');
     const deadlineTime = taskForm.deadlineTime.value;
     const task = new Task(id, details, deadlineDate, deadlineTime);
     tasksList.push(task);
-    console.log("taskList after adding a task------>", tasksList);
     localStorage.setItem("tasksList", JSON.stringify(tasksList));
     createCards();
-    id++;
     taskForm.reset();
 }
 
@@ -73,38 +72,23 @@ function deleteTask(taskId) {
     createCards();
 }
 
+function getLastId() {
+    if (tasksList.length > 0) {
+        return tasksList[tasksList.length-1].id;
+    }
+    return 0;
+}
+
 let tasksList = [];
-const now = new Date();
-let id=1;
 
 tasksListFromLocal = localStorage.getItem("tasksList");
 if (tasksListFromLocal) {
     const tasksListArray = JSON.parse(tasksListFromLocal);
-    if (tasksListArray.length > 0) {
-        id = tasksListArray[tasksListArray.length-1].id + 1;
-    }
     for (let i = 0; i < tasksListArray.length; i++) {
         const task = tasksListArray[i];
-
-        const customDateString = task.deadlineDate + " " + task.deadlineTime;
-        const parts = customDateString.split(/[\/\s:]/);
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        const hours = parseInt(parts[3], 10);
-        const minutes = parseInt(parts[4], 10);
-        const deadLineDateObject = new Date(year, month, day, hours, minutes);
-
-        if (now < deadLineDateObject){
-            const newTask = new Task(task.id, task.details, task.deadlineDate, task.deadlineTime);
-            tasksList.push(newTask);
-        }
+        const newTask = new Task(task.id, task.details, task.deadlineDate, task.deadlineTime);
+        tasksList.push(newTask);
     }
 }
 
-console.log(tasksList);
-
-localStorage.setItem("tasksList", JSON.stringify(tasksList));
-
 createCards();
-
