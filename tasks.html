@@ -123,6 +123,23 @@
     .delete-button-i {
         font-size: 100%;
     }
+    
+    .fade-in-element {
+        opacity: 0; /* Start invisible */
+        transform: translateX(-50px); /* Start slightly to the left */
+        animation: fadeInFromLeft 1s ease forwards; /* Apply the animation */
+    }
+
+    @keyframes fadeInFromLeft {
+        0% {
+            opacity: 0;
+            transform: translateX(-50px); /* Initial state: invisible and to the left */
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0); /* Final state: fully visible and in original position */
+        }
+    }
 
 </style>
 
@@ -151,7 +168,6 @@
     </div>
 
     <div id="div-main-id" class="div-main-class pt-5 pb-5"></div>
-
 
     <script src="tasks.js"></script>
     
