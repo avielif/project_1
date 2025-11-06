@@ -22,8 +22,39 @@ function addTask(event) {
     const task = new Task(id, details, deadlineDate, deadlineTime);
     tasksList.push(task);
     localStorage.setItem("tasksList", JSON.stringify(tasksList));
-    createCards();
+    createOneCard();
     taskForm.reset();
+}
+
+function createOneCard() {
+    const mainDiv = document.querySelector("#div-main-id");
+    const task = tasksList[tasksList.length-1];
+    const cardDiv = document.createElement("div");
+    cardDiv.setAttribute("class", "div-card-class fade-in-element position-relative");
+    cardDiv.setAttribute("id", "div-card-id-" + (tasksList.length-1));
+    mainDiv.prepend(cardDiv);
+
+    const card = document.querySelector("#div-card-id-" + (tasksList.length-1));
+
+    const delButton = document.createElement("button");
+    delButton.setAttribute("class", "delete-button");
+    delButton.setAttribute("id", "delete-button-id-" + (tasksList.length-1));
+    delButton.setAttribute("onclick", "deleteTask('" + task.id + "')");
+    
+    const taskDetails = document.createElement("p");
+    taskDetails.setAttribute("class", "details-class");
+    taskDetails.innerText = task.details;
+
+    const taskDateTime = document.createElement("p");
+    taskDateTime.setAttribute("class", "date-time-class mb-0");
+    taskDateTime.innerText = task.deadlineDate + "\n" + task.deadlineTime;
+
+    card.append(delButton, taskDetails, taskDateTime);
+
+    const deleteButton = document.querySelector("#delete-button-id-" + (tasksList.length-1));
+    const icon = document.createElement("i");
+    icon.setAttribute("class", "bi bi-x-square-fill delete-button-i");
+    deleteButton.appendChild(icon);
 }
 
 function createCards() {
@@ -35,7 +66,7 @@ function createCards() {
         const cardDiv = document.createElement("div");
         cardDiv.setAttribute("class", "div-card-class position-relative");
         cardDiv.setAttribute("id", "div-card-id-"+i);
-        mainDiv.appendChild(cardDiv);
+        mainDiv.prepend(cardDiv);
 
         const card = document.querySelector("#div-card-id-"+i);
 
